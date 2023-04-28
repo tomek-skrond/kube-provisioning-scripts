@@ -3,8 +3,6 @@
 
 ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 
-puts ENV["XD"]
-
 DISTRO = "centos/7"
 
 MASTER_NODES = 1
