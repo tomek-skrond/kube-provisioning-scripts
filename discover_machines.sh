@@ -9,14 +9,14 @@ HOST_PORTS=($(vagrant ssh-config | grep Port | awk '{ print $2 }'))
 echo "GATHERING MACHINE NAMES"
 HOSTS=($(vagrant ssh-config | grep -w Host | awk '{ print $2 }'))
 
-how_many_machines=$((($(vagrant ssh-config | grep -owc Host) - 1)))
+HOW_MANY_MACHINES=$((($(vagrant ssh-config | grep -owc Host) - 1)))
 
 echo ""
 echo "......................"
-echo $(($how_many_machines + 1)) Machines Detected:
+echo $(($HOW_MANY_MACHINES + 1)) Machines Detected:
 echo "......................"
 
-for i in $(seq 0 $how_many_machines); do
+for i in $(seq 0 $HOW_MANY_MACHINES); do
 
 	host=${HOSTS[$i]}
 	ip=${HOST_IPS[$i]}
@@ -39,3 +39,6 @@ for i in $(seq 0 $how_many_machines); do
 	echo "	EXPORTING ENV (VM name): ID_${host}"
 	export HOST_${host}=$host
 done
+
+export HOW_MANY_MACHINES=$(($HOW_MANY_MACHINES + 1))
+export HOSTS=$HOSTS

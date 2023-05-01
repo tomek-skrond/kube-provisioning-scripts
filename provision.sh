@@ -13,6 +13,17 @@ usage(){
   echo "Usage: $0 "
 }
 
+vagrant_up(){
+	echo "SETTING UP VAGRANT MACHINES"
+	vagrant up
+
+}
+
+check_ansible_hosts(){
+	echo "CHECKING ANSIBLE HOSTS"
+	ansible -m ping all -i ansible/inventory.yaml
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     h)
@@ -77,3 +88,9 @@ echo WORKER_NODES: $WORKER_NODES
 echo WORKER_NODE_VM: $WORKER_NODE_VM
 echo WORKER_CPU_COUNT: $WORKER_CPU_COUNT
 echo WORKER_MEMORY: $WORKER_MEMORY
+
+vagrant_up
+
+source discover_machines.sh
+
+check_ansible_hosts
