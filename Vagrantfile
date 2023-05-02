@@ -5,6 +5,12 @@ ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 
 DISTRO = ENV['DISTRO']
 
+### FOR EXAMPLE: keknet.com
+LOCAL_SUBDOMAIN = ENV['LOCAL_SUBDOMAIN']
+### FULL DOMAIN = MASTER_NODE_VM + LOCAL_SUBDOMAIN
+### Example: master1.keknet.com
+### Example: worker1.keknet.local.com
+
 MASTER_NODES = ENV['MASTER_NODES'].to_i
 MASTER_NODE_VM = ENV['MASTER_NODE_VM']
 MASTER_CPU_COUNT = ENV['MASTER_CPU_COUNT'].to_i
@@ -15,8 +21,6 @@ WORKER_NODE_VM = ENV['WORKER_NODE_VM']
 WORKER_CPU_COUNT = ENV['WORKER_CPU_COUNT'].to_i
 WORKER_MEMORY = ENV['WORKER_MEMORY'].to_i
 
-puts WORKER_NODES
-
 #### PROVISION WORKERS ####
 Vagrant.configure(2) do |config|
 
@@ -25,7 +29,7 @@ Vagrant.configure(2) do |config|
     config.vm.define "#{WORKER_NODE_VM}#{i}" do |node|
     
       node.vm.box = "#{DISTRO}"
-      node.vm.hostname = "#{WORKER_NODE_VM}#{i}.keknet.com"
+      node.vm.hostname = "#{WORKER_NODE_VM}#{i}.#{LOCAL_SUBDOMAIN}"
 
 #      node.vm.disk :disk, size: "#{DISK_SIZE}GB", primary: true
 
@@ -49,7 +53,7 @@ Vagrant.configure(2) do |config|
   (1..NodeCount).each do |i|
     config.vm.define "#{MASTER_NODE_VM}#{i}" do |node|
       node.vm.box = "#{DISTRO}"
-      node.vm.hostname = "#{MASTER_NODE_VM}#{i}.keknet.com"
+      node.vm.hostname = "#{MASTER_NODE_VM}#{i}.#{LOCAL_SUBDOMAIN}"
 
 #      node.vm.disk :disk, size: "#{DISK_SIZE}GB", primary: true
 

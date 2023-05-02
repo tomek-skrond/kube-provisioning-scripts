@@ -8,4 +8,4 @@ IDENTITY_FILE=$(vagrant ssh-config $HOST | grep IdentityFile | awk '{ print $2 }
 HOST_IP=$(vagrant ssh-config $HOST | grep HostName | awk '{ print $2 }')
 HOST_PORT=$(vagrant ssh-config $HOST | grep Port | awk '{ print $2 }')
 
-ssh -i $IDENTITY_FILE vagrant@$HOST_IP -p $HOST_PORT
+ssh -o StrictHostKeyChecking=no -i $IDENTITY_FILE vagrant@$HOST_IP -p $HOST_PORT
