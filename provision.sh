@@ -58,12 +58,17 @@ provision_vbox_network(){
 		ansible $machine -m shell -a 'sudo /sbin/shutdown -h now' -i ansible/inventory.yaml
 	done
 
+	echo "Waiting for VMs to shut down completely"
+	sleep 10
+	
 	if [[ "$NETWORK_TYPE" == "natnetwork" ]]; then
 		VBoxManage natnetwork add --netname $NETWORK_NAME --network "$NETWORK_ADDRESSING/$NETWORK_SUBNET_MASK" --enable
 		VBoxManage natnetwork start --netname $NETWORK_NAME
+		VBoxManage natnetwork modify --netname $NETWORK_NAME --dhcp on
 		
 		for machine in ${HOSTS[@]};do
-			VBoxManage modifyvm $machine --nic2 natnetwork --nat-network1 $NETWORK_NAME
+			VBoxManage modifyvm $machine --nic2 natnetwork --nat-network2 $NETWORK_NAME
+			VBoxManage modifyvm $machine --nic2 natnetwork --nat-network2 $NETWORK_NAME
 		done
 	fi
 
