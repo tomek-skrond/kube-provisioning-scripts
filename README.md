@@ -84,6 +84,8 @@ Additionally, this script is capable of altering default values for VM provision
 
 ```
 
+Sample usage:
+`./provision.sh --master-nodes 1 --worker-nodes 1 --worker-memory 1024 --master-memory 2048 --worker-cpu 1 --master-cpu 2`
 
 
 
