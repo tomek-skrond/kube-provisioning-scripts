@@ -1,0 +1,20 @@
+vagrant:
+  hosts:
+    master1:
+      ansible_host: 127.0.0.1
+      ansible_port: 2201
+      ansible_ssh_private_key_file: /path/to/key1
+      ansible_user: vagrant
+      become: true
+    worker1:
+      ansible_host: 127.0.0.1
+      ansible_port: 2222
+      ansible_ssh_private_key_file: /path/to/key2
+      ansible_user: vagrant
+      become: true
+    worker2:
+      ansible_host: 127.0.0.1
+      ansible_port: 2200
+      ansible_ssh_private_key_file: /path/to/key3
+      ansible_user: vagrant
+      become: true

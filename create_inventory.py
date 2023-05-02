@@ -39,6 +39,7 @@ print(machine_names)
 
 data = {
     'vagrant': {
+        'ansible_ssh_common_args':'-o StrictHostKeyChecking=no',
         'hosts' : {
         }
     }
@@ -56,7 +57,8 @@ for machine_name in machine_names:
             'ansible_host': host_ip,
             'ansible_user': ansible_user,
             'ansible_ssh_private_key_file': ssh_id,
-            'become': True
+            'become': True,
+            'ansible_ssh_extra_args' : '-o StrictHostKeyChecking=no'
         }
     }
 

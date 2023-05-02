@@ -19,6 +19,10 @@ vagrant_up(){
 
 }
 
+build_ansible_config(){
+	python3 create_inventory.py
+}
+
 check_ansible_hosts(){
 	echo "CHECKING ANSIBLE HOSTS"
 	ansible -m ping all -i ansible/inventory.yaml
@@ -92,5 +96,7 @@ echo WORKER_MEMORY: $WORKER_MEMORY
 vagrant_up
 
 source discover_machines.sh
+
+build_ansible_config
 
 check_ansible_hosts
