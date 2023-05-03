@@ -5,4 +5,50 @@
   become: yes
   tasks:
     - name: Disable Firewall
-      shell: "ls -la"
+      service:
+        name: firewalld
+        state: stopped
+        enabled: false
+    - name: Disable swap
+      shell: "cat /etc/fstab; sudo swapoff -a; sed -i '/swap/d' /etc/fstab"  
+    - name: Disable SELinux
+      ansible.posix.selinux:
+        state: disabled
+    - name: Disable SELinux permanently
+      shell: "sed -i --follow-symlinks 's/^SELINUX=enforcing/SELINUX=disabled/' /etc/sysconfig/selinux"
+    - name: Reboot host for SELinux to take effect
+      ansible.builtin.reboot:
+    - name: Update sysctl for networking
+      shell: |
+        cat >>/etc/sysctl.d/kubernetes.conf<<EOF
+        net.bridge.bridge-nf-call-ip6tables = 1
+        net.bridge.bridge-nf-call-iptables = 1
+        EOF
+        sysctl --system
+    - name: Install docker engine
+      shell: |
+        yum install -y yum-utils device-mapper-persistent-data lvm2
+        yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+        yum install -y docker-ce-19.03.12 
+        systemctl enable --now docker
+    - name: Check docker
+      shell: "docker ps"
+    - name: Add yum repo
+      shell: |
+        cat >>/etc/yum.repos.d/kubernetes.repo<<EOF
+        [kubernetes]
+        name=Kubernetes
+        baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+        enabled=1
+        gpgcheck=1
+        repo_gpgcheck=1
+        gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+                https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+        EOF
+    - name: Install kubernetes components
+      shell: "yum install -y kubeadm-1.18.5-0 kubelet-1.18.5-0 kubectl-1.18.5-0"
+    - name: Enable & start kubelet
+      shell: "systemctl enable --now kubelet"
+    
+
+
