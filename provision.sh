@@ -83,7 +83,6 @@ destroy(){
 	source discover_machines.sh
 	
 	vagrant destroy
-	vagrant global-status --prune
 	rm -rf .vagrant/machines/*
 	/bin/bash -lc "$(pwd)/util/clear_known_hosts.sh"
 
@@ -91,14 +90,13 @@ destroy(){
 	if [[ "$NETWORK_TYPE" == "natnetwork" ]]; then
 		VBoxManage natnetwork remove --netname $NETWORK_NAME
 	fi
+	rm $(pwd)/ansible/inventory.yaml
+	vagrant global-status --prune
 	exit 0
 }
 
 
-#source .env file for initial variables
-source .env
-
-initial_config
+cat .env > .env.old
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -107,36 +105,45 @@ while [[ $# -gt 0 ]]; do
 	    exit 0
 	    ;;
     -m|--master-nodes)
+	sed -i 's/MASTER_NODES=[0-9]*/MASTER_NODES\='"$2"'/g' .env
 	export MASTER_NODES=$2
 	echo master-node number set to $MASTER_NODES
 	shift 2
 	;;
     -w|--worker-nodes)
+	sed -i 's/WORKER_NODES=[0-9]*/WORKER_NODES\='"$2"'/g' .env
 	export WORKER_NODES=$2
 	echo worker-node number set to $WORKER_NODES
 	shift 2
 	;;
     -wm|--worker-memory)
+	sed -i 's/WORKER_MEMORY=[0-9]*/WORKER_MEMORY\='"$2"'/g' .env
 	export WORKER_MEMORY=$2
 	echo worker node memory set to $WORKER_MEMORY
 	shift 2
 	;;
     -mm|--master-memory)
+	sed -i 's/WORKER_MEMORY=[0-9]*/WORKER_MEMORY\='"$2"'/g' .env
 	export MASTER_MEMORY=$2
 	echo master node memory set to $MASTER_MEMORY
 	shift 2
 	;;
     -wc|--worker-cpu)
+	sed -i 's/WORKER_CPU_COUNT=[0-9]*/WORKER_CPU_COUNT\='"$2"'/g' .env
 	export WORKER_CPU_COUNT=$2
 	echo worker node cpu count set to $WORKER_CPU_COUNT
 	shift 2
 	;;
     -mc|--master-cpu)
+	sed -i 's/MASTER_CPU_COUNT=[0-9]*/MASTER_CPU_COUNT\='"$2"'/g' .env
 	export MASTER_CPU_COUNT=$2
 	echo master node cpu count set to $WORKER_CPU_COUNT
 	shift 2
 	;;
     -n|--network-settings)
+	sed -i 's/NETWORK_NAME=[Aa-Zz]*/NETWORK_NAME\='"$2"'/g' .env
+	sed -i -E 's/NETWORK_ADDRESSING=[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/NETWORK_ADDRESSING='"$3"'/g' .env
+	sed -i 's/NETWORK_SUBNET_MASK=[0-9]*/NETWORK_SUBNET_MASK\='"$4"'/g' .env
 	export NETWORK_NAME=$2
 	export NETWORK_ADDRESSING=$3
 	export NETWORK_SUBNET_MASK=$4
@@ -153,6 +160,14 @@ while [[ $# -gt 0 ]]; do
 	;;
   esac
 done
+
+echo "DIFFERENCE BETWEEN INITIAL CONFIG"
+diff .env .env.old
+
+#source .env file for initial variables
+source .env
+
+initial_config
 
 echo PROVISIONING PARAMETERS:
 echo ""
@@ -180,7 +195,7 @@ vagrant_up
 #get information about provisioned machines
 #generate env variables for ansible inventory creation
 source discover_machines.sh
-build ansible inventory
+#build ansible inventory
 build_ansible_config
 #test availability of machines
 check_ansible_hosts
