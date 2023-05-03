@@ -25,7 +25,7 @@ WORKER_MEMORY = ENV['WORKER_MEMORY'].to_i
 Vagrant.configure(2) do |config|
 
   config.vbguest.auto_update = false
-  
+
   NodeCount = WORKER_NODES
   (1..NodeCount).each do |i|
     config.vm.define "#{WORKER_NODE_VM}#{i}" do |node|

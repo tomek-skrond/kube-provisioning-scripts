@@ -4,4 +4,5 @@
   hosts: all
   become: yes
   tasks:
-   - name: Disable Firewall
+    - name: Disable Firewall
+      shell: "ls -la"
