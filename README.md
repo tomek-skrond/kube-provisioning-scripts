@@ -9,22 +9,29 @@ Vagrant + Ansible configurations and bash scripts that automate provisioning of 
 ├── ansible
 │   ├── example_inventory.yml
 │   └── inventory.yaml
+└── playbooks
+│       ├── centos7
+│       │   └── configure-kube-centos7.yml
+│       └── ubuntu
 ├── create_inventory.py
 ├── discover_machines.sh
 ├── provision.sh
 ├── README.md
 ├── .env
+├── .env.old
 ├── util
 │   ├── clear_known_hosts.sh
 │   └── vconnect.sh
 └── Vagrantfile
 ```
 
-
-
 #### `ansible/` Folder
 
 Contains dynamically generated ansible inventory file (created by `create_inventory.py`).
+
+#### `ansible/playbooks`
+
+Holds ansible playbooks for k8s cluster configuration
 
 #### `util/` Folder
 
@@ -42,6 +49,8 @@ $ ./vconnect.sh host1
 #### Vagrantfile
 
 Provisions virtual machines according to all environmental variables exported in .env.
+
+Before `vagrant up` (executed in the script) it is required to source .env file.
 
 `.env` file contents:
 ```
@@ -84,8 +93,14 @@ Additionally, this script is capable of altering default values for VM provision
 
 ```
 
+*** BEFORE RUNNING PROVISIONING SCRIPT: ***
+
+- Source the `.env` file (crucial for Vagrantfile to run properly)
+
 Sample usage:
-`./provision.sh --master-nodes 1 --worker-nodes 1 --worker-memory 1024 --master-memory 2048 --worker-cpu 1 --master-cpu 2`
+`
+$ . .env
+$ ./provision.sh --master-nodes 1 --worker-nodes 1 --worker-memory 1024 --master-memory 2048 --worker-cpu 1 --master-cpu 2`
 
 
 
@@ -96,6 +111,11 @@ Sample usage:
 $ vagrant --version
 Vagrant 2.3.4
 ```
+
+#### Ruby
+```
+$ ruby --version
+ruby 3.0.5p211 (2022-11-24 revision ba5cf0f7c5) [x86_64-linux]
 
 #### Ansible
 ```
