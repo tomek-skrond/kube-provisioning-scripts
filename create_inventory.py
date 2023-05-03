@@ -22,30 +22,36 @@ worker_node_name = os.environ['WORKER_NODE_VM']
 
 
 
-machine_names = []
+workers_names = []
+masters_names = []
 
 for i in range(worker_nodes):
-    machine_names.append(
+    workers_names.append(
         f'{worker_node_name}{i+1}'
     )
 
 
 for i in range(master_nodes):
-    machine_names.append(
+    masters_names.append(
         f'{master_node_name}{i+1}'
     )
 
-print(machine_names)
+print("workers:", workers_names)
+print("masters:",masters_names)
 
 data = {
-    'vagrant': {
-        'ansible_ssh_common_args':'-o StrictHostKeyChecking=no',
-        'hosts' : {
-        }
+    'masters': {
+        'hosts': {}
+
+    },
+    'workers': {
+        'hosts': {}
+
     }
+
 }
 
-for machine_name in machine_names:
+for machine_name in masters_names:
     port = int(os.environ[f'PORT_{machine_name}'])
     host_ip = os.environ[f'IP_{machine_name}']
     ansible_user = 'vagrant'
@@ -62,7 +68,26 @@ for machine_name in machine_names:
         }
     }
 
-    data['vagrant']['hosts'].update(conf)
+    data['masters']['hosts'].update(conf)
+
+for machine_name in workers_names:
+    port = int(os.environ[f'PORT_{machine_name}'])
+    host_ip = os.environ[f'IP_{machine_name}']
+    ansible_user = 'vagrant'
+    ssh_id = os.environ[f'ID_{machine_name}']
+
+    conf = {
+        f'{machine_name}' : {
+            'ansible_port': port,
+            'ansible_host': host_ip,
+            'ansible_user': ansible_user,
+            'ansible_ssh_private_key_file': ssh_id,
+            'become': True,
+            'ansible_ssh_extra_args' : '-o StrictHostKeyChecking=no'
+        }
+    }
+
+    data['workers']['hosts'].update(conf)
 
 print("Created configuration for vagrant hosts:")
 print(data)

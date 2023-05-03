@@ -1,0 +1,7 @@
+---
+
+- name: Install & Configure Kubernetes
+  hosts: all
+  become: yes
+  tasks:
+   - name: Disable Firewall

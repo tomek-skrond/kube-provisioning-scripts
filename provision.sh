@@ -2,9 +2,7 @@
 
 
 initial_config(){
-	source .env
-
-	echo "INITIAL CONFIGURATION FILE CONTENTS:"
+	echo "INITIAL CONFIGURATION FILE CONTENT:"
 	echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	cat .env
 	echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
@@ -83,7 +81,10 @@ provision_vbox_network(){
 
 destroy(){
 	source discover_machines.sh
+	
 	vagrant destroy
+	vagrant global-status --prune
+	rm -rf .vagrant/machines/*
 	/bin/bash -lc "$(pwd)/util/clear_known_hosts.sh"
 
 	echo "REMOVING ADDITIONAL NETWORKS"
@@ -95,6 +96,8 @@ destroy(){
 
 
 #source .env file for initial variables
+source .env
+
 initial_config
 
 while [[ $# -gt 0 ]]; do
@@ -104,39 +107,39 @@ while [[ $# -gt 0 ]]; do
 	    exit 0
 	    ;;
     -m|--master-nodes)
-	MASTER_NODES=$2
+	export MASTER_NODES=$2
 	echo master-node number set to $MASTER_NODES
 	shift 2
 	;;
     -w|--worker-nodes)
-	WORKER_NODES=$2
+	export WORKER_NODES=$2
 	echo worker-node number set to $WORKER_NODES
 	shift 2
 	;;
     -wm|--worker-memory)
-	WORKER_MEMORY=$2
+	export WORKER_MEMORY=$2
 	echo worker node memory set to $WORKER_MEMORY
 	shift 2
 	;;
     -mm|--master-memory)
-	MASTER_MEMORY=$2
+	export MASTER_MEMORY=$2
 	echo master node memory set to $MASTER_MEMORY
 	shift 2
 	;;
     -wc|--worker-cpu)
-	WORKER_CPU_COUNT=$2
+	export WORKER_CPU_COUNT=$2
 	echo worker node cpu count set to $WORKER_CPU_COUNT
 	shift 2
 	;;
     -mc|--master-cpu)
-	MASTER_CPU_COUNT=$2
+	export MASTER_CPU_COUNT=$2
 	echo master node cpu count set to $WORKER_CPU_COUNT
 	shift 2
 	;;
     -n|--network-settings)
-	NETWORK_NAME=$2
-	NETWORK_ADDRESSING=$3
-	NETWORK_SUBNET_MASK=$4
+	export NETWORK_NAME=$2
+	export NETWORK_ADDRESSING=$3
+	export NETWORK_SUBNET_MASK=$4
 	shift 4
 	;;
     -d|--destroy)
@@ -177,7 +180,7 @@ vagrant_up
 #get information about provisioned machines
 #generate env variables for ansible inventory creation
 source discover_machines.sh
-#build ansible inventory
+build ansible inventory
 build_ansible_config
 #test availability of machines
 check_ansible_hosts
