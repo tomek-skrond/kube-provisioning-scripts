@@ -113,11 +113,14 @@ Vagrant 2.3.4
 ```
 
 #### Ruby
+
 ```
 $ ruby --version
 ruby 3.0.5p211 (2022-11-24 revision ba5cf0f7c5) [x86_64-linux]
+```
 
 #### Ansible
+
 ```
 $ ansible --version
 ansible [core 2.14.4]
