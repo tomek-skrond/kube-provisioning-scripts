@@ -38,9 +38,11 @@ Holds ansible playbooks for k8s cluster configuration
 Contains utility scripts that help with smoother debugging/development experience.
 
 `clear_known_hosts.sh` -> 'one liner' that removes all host keys in known_hosts that have `[127.0.0.1]` tag. 
+
 `vconnect.sh` -> used to connect to specified node (as an argument) deployed by vagrant
 
 Usage:
+
 ```
 $ ./vconnect.sh host1
 [vagrant@localhost]$
