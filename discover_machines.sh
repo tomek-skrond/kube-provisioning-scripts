@@ -38,6 +38,8 @@ for i in $(seq 0 $HOW_MANY_MACHINES); do
 	export PORT_${host}=$port
 	echo "	EXPORTING ENV (VM name): ID_${host}"
 	export HOST_${host}=$host
+
+	#echo ${ID_${host}}     
 done
 
 export HOW_MANY_MACHINES=$(($HOW_MANY_MACHINES + 1))

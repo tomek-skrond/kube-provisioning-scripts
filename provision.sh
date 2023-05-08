@@ -201,3 +201,7 @@ build_ansible_config
 check_ansible_hosts
 #incorporate additional networks to machines
 provision_vbox_network
+#run ansible playbook (install and configure Kubernetes on all nodes, playbooks path: ansible/playbooks/[DISTRO]/)
+#echo Distribution: $DISTRO
+#distro_fmt=$(echo $DISTRO)
+#ansible-playbook ansible/playbooks/
