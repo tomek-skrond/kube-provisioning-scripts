@@ -25,10 +25,8 @@ usage(){
     	[-mc|--master-cpu]
         	Changes amount of CPUs for master nodes
 	[-n|--network-settings]
-		Set parameters for network (only NETWORK available):
-			-> Network Name (ex. NETWORK2137)
-			-> Nat Network Address (ex. 192.168.12.0)
-			-> CIDR Subnet Mask (ex. 24)
+		Set parameters for network:
+			-> Network Address (ex. 192.168.12.0)
 	[-d|--destroy]
 		Cleanup"
 }
@@ -44,39 +42,7 @@ build_ansible_config(){
 
 check_ansible_hosts(){
 	echo "CHECKING ANSIBLE HOSTS"
-	ansible -m ping all -i ansible/inventory.yaml
-}
-
-provision_vbox_network(){
-	echo "network provisioning"
-	echo Shutting down vms
-
-	for machine in ${HOSTS[@]}; do
-		#VBoxManage controlvm $machine poweroff
-		ansible $machine -m shell -a 'sudo /sbin/shutdown -h now' -i ansible/inventory.yaml
-	done
-
-	echo "Waiting for VMs to shut down completely"
-	sleep 10
-	
-	if [[ "$NETWORK_TYPE" == "natnetwork" ]]; then
-		VBoxManage natnetwork add --netname $NETWORK_NAME --network "$NETWORK_ADDRESSING/$NETWORK_SUBNET_MASK" --enable
-		VBoxManage natnetwork start --netname $NETWORK_NAME
-		VBoxManage natnetwork modify --netname $NETWORK_NAME --dhcp on
-		
-		for machine in ${HOSTS[@]};do
-			VBoxManage modifyvm $machine --nic2 natnetwork --nat-network2 $NETWORK_NAME
-			VBoxManage modifyvm $machine --nic2 natnetwork --nat-network2 $NETWORK_NAME
-		done
-	fi
-
-	if [[ "$NETWORK_TYPE" == "hostonly" ]]; then
-		echo "hostonly - not implemented"
-	fi
-
-	for machine in ${HOSTS[@]}; do
-		VBoxManage startvm $machine
-	done
+	ansible -m ping all -i $(pwd)/ansible/inventory.yaml
 }
 
 destroy(){
@@ -86,16 +52,12 @@ destroy(){
 	rm -rf .vagrant/machines/*
 	/bin/bash -lc "$(pwd)/util/clear_known_hosts.sh"
 
-	echo "REMOVING ADDITIONAL NETWORKS"
-	if [[ "$NETWORK_TYPE" == "natnetwork" ]]; then
-		VBoxManage natnetwork remove --netname $NETWORK_NAME
-	fi
 	rm $(pwd)/ansible/inventory.yaml
-	vagrant global-status --prune
+	#vagrant global-status --prune
 	exit 0
 }
 
-
+# save older config
 cat .env > .env.old
 
 while [[ $# -gt 0 ]]; do
@@ -141,13 +103,9 @@ while [[ $# -gt 0 ]]; do
 	shift 2
 	;;
     -n|--network-settings)
-	sed -i 's/NETWORK_NAME=[Aa-Zz]*/NETWORK_NAME\='"$2"'/g' .env
 	sed -i -E 's/NETWORK_ADDRESSING=[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/NETWORK_ADDRESSING='"$3"'/g' .env
-	sed -i 's/NETWORK_SUBNET_MASK=[0-9]*/NETWORK_SUBNET_MASK\='"$4"'/g' .env
-	export NETWORK_NAME=$2
-	export NETWORK_ADDRESSING=$3
-	export NETWORK_SUBNET_MASK=$4
-	shift 4
+	export NETWORK_ADDRESSING=$2
+	shift 2
 	;;
     -d|--destroy)
 	destroy
@@ -190,6 +148,8 @@ echo WORKER_NODE_VM: $WORKER_NODE_VM
 echo WORKER_CPU_COUNT: $WORKER_CPU_COUNT
 echo WORKER_MEMORY: $WORKER_MEMORY
 
+#echo ${NETWORK_ADDRESSING:((-${#NETWORK_ADDRESSING})):((${#NETWORK_ADDRESSING}-1))}
+
 #provision machines using vagrant
 vagrant_up
 #get information about provisioned machines
@@ -199,9 +159,9 @@ source discover_machines.sh
 build_ansible_config
 #test availability of machines
 check_ansible_hosts
-#incorporate additional networks to machines
-provision_vbox_network
-#run ansible playbook (install and configure Kubernetes on all nodes, playbooks path: ansible/playbooks/[DISTRO]/)
+#TODO
+
+#TODO run ansible playbook (install and configure Kubernetes on all nodes, playbook's path: ansible/playbooks/[DISTRO]/)
 #echo Distribution: $DISTRO
 #distro_fmt=$(echo $DISTRO)
-#ansible-playbook ansible/playbooks/
+ansible-playbook -v $(pwd)/ansible/playbooks/centos7/configure-kube-centos7.yml -i $(pwd)/ansible/inventory.yaml
