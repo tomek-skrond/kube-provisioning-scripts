@@ -8,21 +8,24 @@ Vagrant + Ansible configurations and bash scripts that automate provisioning of 
 .
 ├── ansible
 │   ├── example_inventory.yml
-│   └── inventory.yaml
-└── playbooks
+│   ├── inventory.yaml
+│   └── playbooks
 │       ├── centos7
-│       │   └── configure-kube-centos7.yml
+│       │   ├── configure-kube-centos7.yml
+│       │   └── pre-kube-centos7.yml
 │       └── ubuntu
+├── bootstrap.sh
 ├── create_inventory.py
 ├── discover_machines.sh
+├── generate_etchosts.py
 ├── provision.sh
 ├── README.md
-├── .env
-├── .env.old
+├── todo.md
 ├── util
 │   ├── clear_known_hosts.sh
 │   └── vconnect.sh
-└── Vagrantfile
+├── Vagrantfile
+└── Vagrantfile.old
 ```
 
 #### `ansible/` Folder
