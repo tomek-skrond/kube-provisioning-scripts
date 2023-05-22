@@ -32,7 +32,7 @@ end
 Vagrant.configure(2) do |config|
 
     config.vbguest.auto_update = false
-    config.vm.provision "shell", path: "bootstrap.sh"
+    config.vm.provision "shell", path: "scripts/bootstrap.sh"
   
     (1..MASTER_NODES).each do |i|
   

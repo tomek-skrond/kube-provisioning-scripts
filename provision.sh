@@ -48,11 +48,11 @@ check_ansible_hosts(){
 }
 
 destroy(){
-	source discover_machines.sh
+	source $(pwd)/scripts/discover_machines.sh
 	
 	vagrant destroy
 	rm -rf .vagrant/machines/*
-	/bin/bash -lc "$(pwd)/util/clear_known_hosts.sh"
+	sed -i '/\[127.0.0.1\]/d' ~/.ssh/known_hosts
 
 	rm $(pwd)/ansible/generated/inventory.yaml
 	rm $(pwd)/ansible/generated/etchosts_playbook.yaml
@@ -157,7 +157,7 @@ echo WORKER_MEMORY: $WORKER_MEMORY
 vagrant_up
 #get information about provisioned machines
 #generate env variables for ansible inventory creation
-source discover_machines.sh
+source $(pwd)/scripts/discover_machines.sh
 #build ansible inventory
 build_ansible_config
 #test availability of machines
