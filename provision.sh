@@ -169,3 +169,5 @@ check_ansible_hosts
 #distro_fmt=$(echo $DISTRO)
 ansible-playbook -v $(pwd)/ansible/generated/etchosts_playbook.yaml -i $(pwd)/ansible/generated/inventory.yaml
 ansible-playbook -v $(pwd)/ansible/playbooks/centos7/configure-kube-centos7.yml -i $(pwd)/ansible/generated/inventory.yaml
+
+echo "Provisioning completed"
