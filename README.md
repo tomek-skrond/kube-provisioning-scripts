@@ -1,10 +1,9 @@
 # kube-provisioning-scripts
 
+Vagrant + Ansible configurations and bash scripts that automate provisioning of kubernetes cluster on VirtualBox
+
 <img src="https://www.elao.com/resized/content/images/blog/thumbnails/vagrant.png/132e0fdc7370fe435b5221b60a30ad1e.png"  width="250" height="250"> <img src="https://blog.zwindler.fr/2018/10/ansible_logo.png"  width="250" height="250"> <img src="https://logos-world.net/wp-content/uploads/2021/10/Python-Symbol.png"  width="350" height="220">
 
-
-
-Vagrant + Ansible configurations and bash scripts that automate provisioning of kubernetes cluster on VirtualBox
 
 ## Quick guide
 
