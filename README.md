@@ -56,13 +56,13 @@ Usage: ./provision.sh
         	Changes quantity of master nodes deployed
 	[--worker-nodes]
 		Changes quantity of worker nodes deployed
-    [--worker-memory]
+    	[--worker-memory]
         	Changes amount of RAM for workers
-    [--master-memory]
+    	[--master-memory]
         	Changes amount of RAM for master nodes
-    [--worker-cpu]
+    	[--worker-cpu]
         	Changes amount of CPUs for worker nodes
-    [--master-cpu]
+    	[--master-cpu]
         	Changes amount of CPUs for master nodes
 	[--network-settings]
 		Set parameters for network:
