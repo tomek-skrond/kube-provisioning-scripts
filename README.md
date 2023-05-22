@@ -1,6 +1,23 @@
 # kube-provisioning-scripts
 
+<img src="https://www.elao.com/resized/content/images/blog/thumbnails/vagrant.png/132e0fdc7370fe435b5221b60a30ad1e.png"  width="250" height="250"> <img src="https://blog.zwindler.fr/2018/10/ansible_logo.png"  width="250" height="250"> <img src="https://logos-world.net/wp-content/uploads/2021/10/Python-Symbol.png"  width="350" height="220">
+
+
+
 Vagrant + Ansible configurations and bash scripts that automate provisioning of kubernetes cluster on VirtualBox
+
+## Quick guide
+
+**Run all provisioning commands in the working directory of scripts (where `provision.sh` is located)**
+
+To deploy a kubernetes cluster automatically using the `provisioner` tool (`provision.sh`), enter a command:
+```
+$ ./provision.sh
+```
+
+This command reads configuration in file `.env` and provisions a cluster according to environmental variables in `.env` file.
+
+If you want to customize deployments, check out the [provisioner section](https://github.com/tomek-skrond/kube-provisioning-scripts/edit/master/README.md#provisionsh).
 
 ### Project Tree
 
@@ -18,40 +35,53 @@ Vagrant + Ansible configurations and bash scripts that automate provisioning of 
 │       ├── centos7
 │       │   └── configure-kube-centos7.yml
 │       └── ubuntu
-├── bootstrap.sh
-├── discover_machines.sh
+├── docs
+│   └── todo.md
 ├── provision.sh
 ├── README.md
-├── todo.md
-├── util
-│   ├── clear_known_hosts.sh
-│   └── vconnect.sh
-├── Vagrantfile
-└── Vagrantfile.old
+├── scripts
+│   ├── bootstrap.sh
+│   └── discover_machines.sh
+└── Vagrantfile
 ```
+### `provision.sh`
 
-#### `ansible/` Folder
+`provisioner` runs a workflow that initiates automatic provisioning (*Vagrantfile*), creation of ansible inventory (*create_inventory.py*).
 
-Contains dynamically generated ansible inventory file (created by `create_inventory.py`).
-
-#### `ansible/playbooks`
-
-Holds ansible playbooks for k8s cluster configuration
-
-#### `util/` Folder
-
-Contains utility scripts that help with smoother debugging/development experience.
-
-`clear_known_hosts.sh` -> 'one liner' that removes all host keys in known_hosts that have `[127.0.0.1]` tag. 
-
-`vconnect.sh` -> used to connect to specified node (as an argument) deployed by vagrant
-
-Usage:
+Additionally, this script is capable of altering default values for VM provisioning. Currently available modifications are:
 
 ```
-$ ./vconnect.sh host1
-[vagrant@localhost]$
+$ ./provision.sh --help
+Usage: ./provision.sh 
+	[--master-nodes]
+        	Changes quantity of master nodes deployed
+	[--worker-nodes]
+		Changes quantity of worker nodes deployed
+    [--worker-memory]
+        	Changes amount of RAM for workers
+    [--master-memory]
+        	Changes amount of RAM for master nodes
+    [--worker-cpu]
+        	Changes amount of CPUs for worker nodes
+    [--master-cpu]
+        	Changes amount of CPUs for master nodes
+	[--network-settings]
+		Set parameters for network:
+			-> Network Address (ex. 10.42.11.0)
+	[--destroy]
+		Cleanup
 ```
+
+*** BEFORE RUNNING PROVISIONING SCRIPT: ***
+
+- Source the `.env` file (crucial for Vagrantfile to run properly)
+
+Sample usage:
+```
+$ . .env
+$ ./provision.sh --master-nodes 1 --worker-nodes 1 --worker-memory 1024 --master-memory 2048 --worker-cpu 1 --master-cpu 2
+```
+
 
 #### Vagrantfile
 
@@ -65,50 +95,31 @@ Before `vagrant up` (executed in the script) it is required to source .env file.
 
 export DISTRO=centos/7
 
+export NETWORK_ADDRESSING=10.33.1.0
+
 export MASTER_NODES=1
 export MASTER_NODE_VM=master
 export MASTER_CPU_COUNT=2
 export MASTER_MEMORY=2048
 
-export WORKER_NODES=4
+export WORKER_NODES=1
 export WORKER_NODE_VM=worker
 export WORKER_CPU_COUNT=1
 export WORKER_MEMORY=1024
+
+export PROJECT_WORKDIR=$(pwd)
 ```
 
 You can change values of variables in `.env`, then the values become default.
 
-#### `provision.sh`
 
-`provisioner` runs a workflow that initiates automatic provisioning (*Vagrantfile*), creation of ansible inventory (*create_inventory.py*).
+#### `ansible/generated` Folder
 
-Additionally, this script is capable of altering default values for VM provisioning. Currently available modifications are:
+Contains dynamically generated ansible inventory file (created by `create_inventory.py`).
 
-```
-    [-m|--master-nodes]
-        Changes quantity of master nodes deployed
-    [-w|--worker-nodes]
-        Changes quantity of worker nodes deployed
-    [-wm|--worker-memory]
-        Changes amount of RAM for workers
-    [-mm|--master-memory]
-        Changes amount of RAM for master nodes
-    [-wc|--worker-cpu]
-        Changes amount of CPUs for worker nodes
-    [-mc|--master-cpu]
-        Changes amount of CPUs for master nodes
+#### `ansible/playbooks`
 
-```
-
-*** BEFORE RUNNING PROVISIONING SCRIPT: ***
-
-- Source the `.env` file (crucial for Vagrantfile to run properly)
-
-Sample usage:
-`
-$ . .env
-$ ./provision.sh --master-nodes 1 --worker-nodes 1 --worker-memory 1024 --master-memory 2048 --worker-cpu 1 --master-cpu 2`
-
+Holds ansible playbooks for k8s cluster configuration
 
 
 ### Dependencies
