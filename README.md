@@ -7,17 +7,19 @@ Vagrant + Ansible configurations and bash scripts that automate provisioning of 
 ```
 .
 ├── ansible
+│   ├── config-scripts
+│   │   ├── create_inventory.py
+│   │   └── generate_etchosts.py
 │   ├── example_inventory.yml
-│   ├── inventory.yaml
+│   ├── generated
+│   │   ├── etchosts_playbook.yaml
+│   │   └── inventory.yaml
 │   └── playbooks
 │       ├── centos7
-│       │   ├── configure-kube-centos7.yml
-│       │   └── pre-kube-centos7.yml
+│       │   └── configure-kube-centos7.yml
 │       └── ubuntu
 ├── bootstrap.sh
-├── create_inventory.py
 ├── discover_machines.sh
-├── generate_etchosts.py
 ├── provision.sh
 ├── README.md
 ├── todo.md
