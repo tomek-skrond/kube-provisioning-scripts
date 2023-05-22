@@ -45,7 +45,7 @@ If you want to customize deployments, check out the [provisioner section](https:
 ```
 ### `provision.sh`
 
-`provisioner` runs a workflow that initiates automatic provisioning (*Vagrantfile*), creation of ansible inventory (*create_inventory.py*).
+`provisioner` runs a workflow that initiates automatic provisioning (*Vagrantfile*), creation of ansible inventory (*create_inventory.py*, *generate_etchosts.py*).
 
 Additionally, this script is capable of altering default values for VM provisioning. Currently available modifications are:
 
@@ -114,7 +114,7 @@ You can change values of variables in `.env`, then the values become default.
 
 #### `ansible/generated` Folder
 
-Contains dynamically generated ansible inventory file (created by `create_inventory.py`).
+Contains dynamically generated ansible inventory file (created by `create_inventory.py` and `generate_etchosts.py`).
 
 #### `ansible/playbooks`
 
