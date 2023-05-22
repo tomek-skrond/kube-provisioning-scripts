@@ -8,6 +8,7 @@ initial_config(){
 	echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	echo ""
 	echo ""
+	CONF_SCRIPTS_PATH=$(pwd)/ansible/config-scripts/
 }
 
 usage(){
@@ -37,13 +38,13 @@ vagrant_up(){
 }
 
 build_ansible_config(){
-	python3 create_inventory.py
-	python3 generate_etchosts.py $NETWORK_ADDRESSING
+	python3 ${CONF_SCRIPTS_PATH}/create_inventory.py
+	python3 ${CONF_SCRIPTS_PATH}/generate_etchosts.py $NETWORK_ADDRESSING
 }
 
 check_ansible_hosts(){
 	echo "CHECKING ANSIBLE HOSTS"
-	ansible -m ping all -i $(pwd)/ansible/inventory.yaml
+	ansible -m ping all -i $(pwd)/ansible/generated/inventory.yaml
 }
 
 destroy(){
@@ -53,8 +54,8 @@ destroy(){
 	rm -rf .vagrant/machines/*
 	/bin/bash -lc "$(pwd)/util/clear_known_hosts.sh"
 
-	rm $(pwd)/ansible/inventory.yaml
-	rm $(pwd)/ansible/etchosts_playbook.yaml
+	rm $(pwd)/ansible/generated/inventory.yaml
+	rm $(pwd)/ansible/generated/etchosts_playbook.yaml
 	#vagrant global-status --prune
 	exit 0
 }
@@ -166,5 +167,5 @@ check_ansible_hosts
 #TODO run ansible playbook (install and configure Kubernetes on all nodes, playbook's path: ansible/playbooks/[DISTRO]/)
 #echo Distribution: $DISTRO
 #distro_fmt=$(echo $DISTRO)
-ansible-playbook -v $(pwd)/ansible/etchosts_playbook.yaml -i $(pwd)/ansible/inventory.yaml
-ansible-playbook -v $(pwd)/ansible/playbooks/centos7/configure-kube-centos7.yml -i $(pwd)/ansible/inventory.yaml
+ansible-playbook -v $(pwd)/ansible/generated/etchosts_playbook.yaml -i $(pwd)/ansible/generated/inventory.yaml
+ansible-playbook -v $(pwd)/ansible/playbooks/centos7/configure-kube-centos7.yml -i $(pwd)/ansible/generated/inventory.yaml

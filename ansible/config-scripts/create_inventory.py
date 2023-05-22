@@ -1,6 +1,8 @@
 import yaml
 import os
 
+WORKDIR = os.environ['PROJECT_WORKDIR']
+
 #TODO: Generate N 'host' entries to the yaml file as depicted in the template:
 '''
 vagrant:
@@ -91,6 +93,6 @@ for machine_name in workers_names:
 print("Created configuration for vagrant hosts:")
 print(data)
 
-print("SAVING AS AN INVENTORY FILE IN ansible/inventory.yaml")
-with open('ansible/inventory.yaml', 'w') as f:
+print("SAVING AS AN INVENTORY FILE IN ansible/generated/inventory.yaml")
+with open(f'{WORKDIR}/ansible/generated/inventory.yaml', 'w') as f:
     yaml.dump(data,f)

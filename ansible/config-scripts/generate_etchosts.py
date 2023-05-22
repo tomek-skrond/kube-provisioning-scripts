@@ -1,9 +1,10 @@
-import yaml
 import os
 import sys
-import json
 import pprint as pp
-from collections import OrderedDict
+
+WORKDIR = os.environ['PROJECT_WORKDIR']
+
+
 how_many_machines = os.environ['HOW_MANY_MACHINES']
 master_nodes = int(os.environ['MASTER_NODES'])
 worker_nodes = int(os.environ['WORKER_NODES'])
@@ -29,7 +30,7 @@ def create_master_conf():
 
     master_conf_2 = ""
 
-    with open('ansible/etchosts_playbook.yaml',"a") as f:
+    with open(f'{WORKDIR}/ansible/generated/etchosts_playbook.yaml',"a") as f:
         f.write(master_conf_1)
 
         for i in range(worker_nodes):
@@ -56,7 +57,7 @@ def create_worker_conf():
     
     worker_conf_2 = ""
     
-    with open('ansible/etchosts_playbook.yaml',"a") as f:
+    with open(f'{WORKDIR}/ansible/generated/etchosts_playbook.yaml',"a") as f:
         f.write(worker_conf_1)
 
         for i in range(master_nodes):
