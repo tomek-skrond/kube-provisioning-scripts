@@ -48,7 +48,6 @@ data = {
         'hosts': {}
 
     }
-
 }
 
 for machine_name in masters_names:
