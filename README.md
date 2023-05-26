@@ -24,7 +24,7 @@ $ vagrant ssh <machine_name>
 
 **For this command to work, it is required to source the `.env` file.**
 
-If you want to customize deployments, check out the [provisioner section](https://github.com/tomek-skrond/kube-provisioning-scripts/edit/master/README.md#provisionsh).
+If you want to customize deployments, check out the provisioner section
 
 ### Project Tree
 
@@ -79,7 +79,7 @@ Usage: ./provision.sh
 		Cleanup
 ```
 
-*** BEFORE RUNNING PROVISIONING SCRIPT: ***
+** BEFORE RUNNING PROVISIONING SCRIPT: **
 
 - Source the `.env` file (crucial for Vagrantfile to run properly)
 
