@@ -11,10 +11,18 @@ Vagrant + Ansible configurations and bash + Python scripts that automate provisi
 
 To deploy a kubernetes cluster automatically using the `provisioner` tool (`provision.sh`), enter a command:
 ```
+$ . .env
 $ ./provision.sh
 ```
-
 This command reads configuration in file `.env` and provisions a cluster according to environmental variables in `.env` file.
+
+After provisioning, you can access machines using the following command:
+
+```
+$ vagrant ssh <machine_name>
+```
+
+**For this command to work, it is required to source the `.env` file.**
 
 If you want to customize deployments, check out the [provisioner section](https://github.com/tomek-skrond/kube-provisioning-scripts/edit/master/README.md#provisionsh).
 
