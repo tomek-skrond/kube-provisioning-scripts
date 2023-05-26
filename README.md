@@ -14,6 +14,8 @@ To deploy a kubernetes cluster automatically using the `provisioner` tool (`prov
 $ . .env
 $ ./provision.sh
 ```
+Some shells don't support using `.` for sourcing a script, when encountering errors, use `source .env`.
+
 This command reads configuration in file `.env` and provisions a cluster according to environmental variables in `.env` file.
 
 After provisioning, you can access machines using the following command:
