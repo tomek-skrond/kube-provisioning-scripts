@@ -33,6 +33,10 @@ usage(){
 }
 
 vagrant_up(){
+	echo "CUSTOMIZING VIRTUALBOX"
+	/bin/bash -lc 'mkdir -p /etc/vbox/ && echo "* 0.0.0.0/0 ::/0" > /etc/vbox/networks.conf'
+	echo "DOWNLOADING NEEDED EXTENSIONS"
+	vagrant plugin install vagrant-vbguest
 	echo "SETTING UP VAGRANT MACHINES"
 	vagrant up
 }

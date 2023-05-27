@@ -1,0 +1,19 @@
+---
+- name: Edit /etc/hosts file
+  hosts: masters
+  become: true
+  tasks:
+  - name: Add an entry to /etc/hosts in worker1
+    lineinfile:
+      line: 10.33.1.111   worker1.example.com worker1
+      path: /etc/hosts
+      state: present
+- name: Edit /etc/hosts file
+  hosts: workers
+  become: true
+  tasks:
+    - name: Add an entry to /etc/hosts
+      lineinfile:
+        line: 10.33.1.101   master1.example.com master1
+        path: /etc/hosts
+        state: present
