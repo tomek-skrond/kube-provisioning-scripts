@@ -9,6 +9,16 @@ Vagrant + Ansible configurations and bash + Python scripts that automate provisi
 
 **Run all provisioning commands in the working directory of scripts (where `provision.sh` is located)**
 
+### VirtualBox customization
+
+If you want to create virtual networks other than defaults (only 192.168.0.0/24), consider running a script `customize_vbox.sh` as root.
+
+```
+$ sudo ./scripts/customize_vbox.sh
+```
+
+### Deployment
+
 To deploy a kubernetes cluster automatically using the `provisioner` tool (`provision.sh`), enter a command:
 ```
 $ . .env
