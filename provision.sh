@@ -1,6 +1,8 @@
 #!/bin/bash
 
-
+clear_paths(){
+	rm -f $(pwd)/ansible/generated/*
+}
 initial_config(){
 	echo "INITIAL CONFIGURATION FILE CONTENT:"
 	echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
