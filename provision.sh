@@ -156,7 +156,7 @@ echo WORKER_CPU_COUNT: $WORKER_CPU_COUNT
 echo WORKER_MEMORY: $WORKER_MEMORY
 
 #echo ${NETWORK_ADDRESSING:((-${#NETWORK_ADDRESSING})):((${#NETWORK_ADDRESSING}-1))}
-
+clear_paths
 #provision machines using vagrant
 vagrant_up
 #get information about provisioned machines
