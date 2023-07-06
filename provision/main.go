@@ -90,6 +90,7 @@ func ReadEnvs() (*Configuration, error) {
 		destroy,
 	), nil
 }
+
 func ParseFlags(conf *Configuration) (*Configuration, error) {
 
 	var help bool
@@ -130,4 +131,13 @@ func main() {
 		panic(err)
 	}
 	fmt.Println(config)
+
+	if config.Destroy == true {
+		if err := Destroy(); err != nil {
+			fmt.Println(err)
+		}
+		return
+	} else {
+		CreateInfrastructure()
+	}
 }
