@@ -1,0 +1,93 @@
+---
+- name: Pre-kubernetes install tasks
+  hosts: all
+  become: yes
+  tasks:
+    - name: Update and upgrade 
+      shell: yum update -y && yum upgrade -y
+    - name: Install packages
+      shell: yum install -y vim mlocate
+- name: Install tools needed for kubernetes (both nodes)
+  hosts: all
+  become: yes
+  tasks:
+    - name: Disable Firewall
+      service:
+        name: firewalld
+        state: stopped
+        enabled: false
+    - name: Disable swap
+      shell: "cat /etc/fstab; sudo swapoff -a; sed -i '/swap/d' /etc/fstab"  
+    - name: Disable SELinux
+      ansible.posix.selinux:
+        state: disabled
+    - name: Disable SELinux permanently
+      shell: "sed -i --follow-symlinks 's/^SELINUX=enforcing/SELINUX=disabled/' /etc/sysconfig/selinux"
+    - name: Reboot host for SELinux to take effect
+      ansible.builtin.reboot:
+    - name: Update sysctl for networking
+      shell: |
+        cat >>/etc/sysctl.d/kubernetes.conf<<EOF
+        net.bridge.bridge-nf-call-ip6tables = 1
+        net.bridge.bridge-nf-call-iptables = 1
+        EOF
+        sysctl --system
+    - name: Install docker engine
+      shell: |
+        yum install -y yum-utils device-mapper-persistent-data lvm2
+        yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+        yum install -y docker-ce
+        systemctl enable --now docker
+    - name: Add yum repo
+      shell: |
+        cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+        [kubernetes]
+        name=Kubernetes
+        baseurl=https://pkgs.k8s.io/core:/stable:/v1.28/rpm/
+        enabled=1
+        gpgcheck=1
+        gpgkey=https://pkgs.k8s.io/core:/stable:/v1.28/rpm/repodata/repomd.xml.key
+        EOF
+    - name: Install kubernetes components
+      shell: "yum install -y kubeadm kubelet kubectl"
+    - name: Flush & Disable iptables
+      shell: |
+        sudo iptables -F
+        sudo iptables -P INPUT ACCEPT
+        sudo iptables -P FORWARD ACCEPT
+        sudo iptables -P OUTPUT ACCEPT
+- name: Initialize Kubernetes cluster
+  hosts: masters
+  become: yes
+  tasks:
+    - name: Start kubelet
+      shell: |
+        systemctl enable kubelet.service
+        systemctl start kubelet.service
+    - name: remove config.toml
+      shell: rm -rf /etc/containerd/*.toml
+    - name: restart containerd
+      shell: systemctl restart containerd
+    - name: Gather ip address for apiserver
+      shell: ip address show dev enp0s8 | grep -E -o '([0-9]{1,3}\.){3}([0-9]{1,3})' | grep -v 255
+      register: ip
+    - name:  Initialize the cluster
+      shell: kubeadm init --apiserver-advertise-address={{ ip.stdout }} --pod-network-cidr=192.168.0.0/16
+    - name: Deploy Calico overlay network
+      shell: kubectl --kubeconfig=/etc/kubernetes/admin.conf create -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/tigera-operator.yaml
+    - name: Deploy Calico overlay network
+      shell: kubectl --kubeconfig=/etc/kubernetes/admin.conf create -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/custom-resources.yaml
+    - name: Enable kubectl usage on root account
+      shell: |
+        mkdir -p $HOME/.kube
+        sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+        sudo chown $(id -u):$(id -g) $HOME/.kube/config
+    - name: Generate join command for the workers
+      shell: kubeadm token create --print-join-command 2>/dev/null
+      register: joincommand
+    - name: Print join command
+      debug:
+        msg:
+        - "Installation of kubernetes cluster is successfull"
+        - "to join other hosts to the cluster, use command: "
+        - "{{ joincommand.stdout }}"

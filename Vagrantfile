@@ -32,8 +32,10 @@ end
 Vagrant.configure(2) do |config|
 
     config.vbguest.auto_update = false
+    config.vbguest.installer_hooks[:before_install] = ["yum -y install bzip2 elfutils-libelf-devel gcc kernel-devel kernel-headers make perl tar", "sleep 2"]
     config.vm.provision "shell", path: "scripts/bootstrap.sh"
-  
+
+
     (1..MASTER_NODES).each do |i|
   
       config.vm.define "#{MASTER_NODE_VM}#{i}" do |node|
@@ -44,7 +46,7 @@ Vagrant.configure(2) do |config|
         node.vm.hostname          = "#{MASTER_NODE_VM}#{i}.example.com"
   
         node.vm.network "private_network", ip: "#{ADDRESSING}10#{i}"
-  
+          
         node.vm.provider :virtualbox do |v|
           v.name    = "master#{i}"
           v.memory  = MASTER_MEMORY
